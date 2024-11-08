@@ -6,3 +6,4 @@ build_java:
   stage: build
   script:
     - mvn clean install -DskipTests
+    
