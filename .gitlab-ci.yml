@@ -13,7 +13,7 @@ stages:
   - 🛠 tests
 
 build_java:
-  stage: build
+  stage: 📦 build
   script:
     - mvn clean install
   artifacts:
@@ -22,12 +22,12 @@ build_java:
     expire_in: 1 hour
 
 build_image:
-  stage: container
+  stage: 🐋 container
   script:
     - mvn clean spring-boot:build-image
 
 integration_tests:
-  stage: tests
+  stage: 🛠 tests
   script:
     - mvn clean install -P !unitTests -P integrationTests
   artifacts:
