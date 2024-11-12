@@ -1,3 +1,5 @@
+image: maven:3.8.5-jdk-17
+
 variables:
   MAVEN_OPTS: "-Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository"
 
@@ -6,11 +8,33 @@ cache:
     - .m2/repository
 
 stages:
-  - build
+  - 📦 build
+  - 🐋 container
+  - 🛠 tests
 
 build_java:
-  image: maven:3.9.9-jdk-23
   stage: build
   script:
-    - mvn clean install -DskipTests
-    
+    - mvn clean install
+  artifacts:
+    paths:
+      - "**/target/"
+    expire_in: 1 hour
+
+build_image:
+  stage: container
+  script:
+    - mvn clean spring-boot:build-image
+
+integration_tests:
+  stage: tests
+  script:
+    - mvn clean install -P !unitTests -P integrationTests
+  artifacts:
+    when: always
+    reports:
+      junit:
+        - target/surefire-reports/*.xml
+    paths:
+      - target/surefire-reports/*.xml
+      - target/karate-reports/

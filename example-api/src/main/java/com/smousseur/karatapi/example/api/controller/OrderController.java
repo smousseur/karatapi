@@ -1,41 +1,71 @@
 package com.smousseur.karatapi.example.api.controller;
 
 import com.smousseur.karatapi.example.api.model.OrderCreated;
-import com.smousseur.karatapi.example.api.model.OrderStatus;
+import com.smousseur.karatapi.example.api.model.OrderModified;
+import com.smousseur.karatapi.example.api.model.OrderResult;
 import com.smousseur.karatapi.example.api.model.PostOrder;
+import com.smousseur.karatapi.example.api.model.entity.Order;
+import com.smousseur.karatapi.example.api.repository.OrderRepository;
 import java.util.*;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping("/order")
+@RequiredArgsConstructor
 public class OrderController {
-  private static final Set<String> orderIds = new HashSet<>();
-  private static final Random random = new Random();
+
+  private final OrderRepository repository;
 
   @PostMapping
-  public OrderCreated createOrder(
-      @RequestBody PostOrder postOrder, @RequestHeader Map<String, String> headers) {
-    if (!headers.containsKey("authorization")) {
-      throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
-    }
-    if (!headers.get("authorization").equals("Permitted")) {
-      throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Forbidden");
-    }
-    String orderId = UUID.randomUUID().toString();
-    orderIds.add(orderId);
-    return OrderCreated.builder().orderId(orderId).build();
+  @Transactional
+  public ResponseEntity<OrderCreated> createOrder(@RequestBody PostOrder postOrder) {
+    String uuid = UUID.randomUUID().toString();
+    Order order = Order.builder().name(postOrder.getName()).status("CREATED").uuid(uuid).build();
+    repository.save(order);
+    return ResponseEntity.status(HttpStatus.CREATED)
+        .body(OrderCreated.builder().orderId(uuid).build());
+  }
+
+  @PutMapping
+  @Transactional
+  public ResponseEntity<OrderResult> modifyStatus(@RequestBody OrderModified orderModified) {
+    return repository
+        .findByUuid(orderModified.getUuid())
+        .map(
+            order -> {
+              order.setStatus(orderModified.getStatus());
+              return ResponseEntity.ok().body(OrderResult.map(order));
+            })
+        .orElseGet(() -> ResponseEntity.notFound().build());
   }
 
   @GetMapping
-  public OrderStatus getOrder(
-      @RequestParam String orderId, @RequestHeader Map<String, String> headers) {
-    String status = random.nextFloat(1.f) < 0.3f ? "COMPLETE" : "IN_PROGRESS";
-    return orderIds.stream()
-        .filter(id -> id.equals(orderId))
-        .map(id -> OrderStatus.builder().status(status).build())
-        .findFirst()
-        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "entity not found"));
+  public ResponseEntity<OrderResult> getOrder(@RequestParam("uuid") String uuid) {
+    return repository
+        .findByUuid(uuid)
+        .map(OrderResult::map)
+        .map(order -> ResponseEntity.ok().body(order))
+        .orElseGet(() -> ResponseEntity.notFound().build());
+  }
+
+  @DeleteMapping
+  public ResponseEntity<Object> deleteOrder(@RequestParam String uuid) {
+    return repository
+        .findByUuid(uuid)
+        .map(
+            order -> {
+              repository.delete(order);
+              return ResponseEntity.noContent().build();
+            })
+        .orElseGet(() -> ResponseEntity.notFound().build());
+  }
+
+  @GetMapping("/list")
+  public List<OrderResult> getOrders() {
+    return repository.findAll().stream().map(OrderResult::map).toList();
   }
 }
