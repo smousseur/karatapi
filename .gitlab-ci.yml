@@ -3,7 +3,9 @@ image: maven:3.9.9-jdk-17
 variables:
   MAVEN_OPTS: "-Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository"
   TESTCONTAINERS_RYUK_DISABLED: "true"
+  TESTCONTAINERS_CHECKS_DISABLE: "true"
   TESTCONTAINERS_REUSE_ENABLE: "true"
+  TESTCONTAINERS_VERBOSE_LOGGING: "true"
 
 cache:
   paths:
