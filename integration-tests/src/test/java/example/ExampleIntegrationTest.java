@@ -2,9 +2,14 @@ package example;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.github.dockerjava.api.command.CreateContainerCmd;
+import com.github.dockerjava.api.model.ExposedPort;
+import com.github.dockerjava.api.model.PortBinding;
+import com.github.dockerjava.api.model.Ports;
 import com.intuit.karate.Results;
 import com.intuit.karate.Runner;
 import java.util.Map;
+import java.util.function.Consumer;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.GenericContainer;
@@ -19,15 +24,19 @@ class ExampleIntegrationTest {
 
   static final Network network = Network.newNetwork();
 
+  static Consumer<CreateContainerCmd> cmd =
+      e -> e.withPortBindings(new PortBinding(Ports.Binding.bindPort(3306), new ExposedPort(3306)));
+
   @Container
   static final MySQLContainer<?> mySQLContainer =
       new MySQLContainer<>("mysql:latest")
+          .withInitScript("init.sql")
           .withDatabaseName("test")
           .withUsername("caca51")
           .withPassword("Smousse+51")
           .withNetwork(network)
           .withNetworkAliases("db-mysql")
-          .withInitScript("init.sql")
+          .withCreateContainerCmdModifier(cmd)
           .waitingFor(Wait.forListeningPort());
 
   @Container
