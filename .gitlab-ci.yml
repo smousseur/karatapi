@@ -30,6 +30,7 @@ build_image:
 integration_tests:
   stage: 🛠 tests
   script:
+    - cd integration-tests
     - mvn clean install -P !unitTests -P integrationTests
   artifacts:
     when: always
