@@ -37,6 +37,7 @@ class ExampleIntegrationTest {
           .withPassword("Smousse+51")
           .withNetwork(network)
           .withNetworkAliases("db-mysql")
+          .withReuse(true)
           .waitingFor(Wait.forListeningPort().withStartupTimeout(Duration.ofMinutes(2)));
 
   // .withCreateContainerCmdModifier(cmd);
