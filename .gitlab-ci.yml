@@ -24,7 +24,7 @@ build_java:
 build_image:
   stage: 🐋 container
   script:
-    - cd integration-tests
+    - cd example-api
     - mvn clean org.springframework.boot:spring-boot-maven-plugin:build-image
 
 integration_tests:
