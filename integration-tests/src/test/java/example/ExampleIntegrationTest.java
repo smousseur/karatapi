@@ -11,7 +11,6 @@ import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.wait.strategy.Wait;
-import org.testcontainers.dockerclient.DockerClientConfigUtils;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
@@ -22,31 +21,14 @@ class ExampleIntegrationTest {
 
   @Container
   static final MySQLContainer<?> mySQLContainer =
-      (MySQLContainer<?>)
-          new MySQLContainer("mysql:latest") {
-            @Override
-            public String getJdbcUrl() {
-              if (DockerClientConfigUtils.IN_A_CONTAINER) {
-                final String ipAddress = getContainerInfo().getNetworkSettings().getIpAddress();
-                final String port = getExposedPorts().get(0).toString();
-                String additionalUrlParams = constructUrlParameters("?", "&");
-                return "jdbc:mysql://"
-                    + ipAddress
-                    + ":"
-                    + port
-                    + "/"
-                    + getDatabaseName()
-                    + additionalUrlParams;
-              }
-              return super.getJdbcUrl();
-            }
-          }.withDatabaseName("test")
-              .withUsername("caca51")
-              .withPassword("Smousse+51")
-              .withInitScript("init.sql")
-              .withNetwork(network)
-              .withNetworkAliases("db-mysql")
-              .waitingFor(Wait.forListeningPort());
+      new MySQLContainer<>("mysql:latest")
+          .withDatabaseName("test")
+          .withUsername("caca51")
+          .withPassword("Smousse+51")
+          .withNetwork(network)
+          .withNetworkAliases("db-mysql")
+          .withInitScript("init.sql")
+          .waitingFor(Wait.forListeningPort());
 
   @Container
   static GenericContainer<?> exempleApp =
