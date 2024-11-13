@@ -8,6 +8,7 @@ import com.github.dockerjava.api.model.PortBinding;
 import com.github.dockerjava.api.model.Ports;
 import com.intuit.karate.Results;
 import com.intuit.karate.Runner;
+import java.time.Duration;
 import java.util.Map;
 import java.util.function.Consumer;
 import org.junit.jupiter.api.BeforeAll;
@@ -36,7 +37,9 @@ class ExampleIntegrationTest {
           .withPassword("Smousse+51")
           .withNetwork(network)
           .withNetworkAliases("db-mysql")
-          .withCreateContainerCmdModifier(cmd);
+          .waitingFor(Wait.forListeningPort().withStartupTimeout(Duration.ofMinutes(2)));
+
+  // .withCreateContainerCmdModifier(cmd);
 
   @Container
   static GenericContainer<?> exempleApp =
@@ -49,7 +52,7 @@ class ExampleIntegrationTest {
           .withEnv(
               Map.of(
                   "SPRING_DATASOURCE_URL",
-                  "jdbc:mysql://db-mysql:3307/test",
+                  "jdbc:mysql://db-mysql:3306/test",
                   "SPRING_DATASOURCE_USERNAME",
                   mySQLContainer.getUsername(),
                   "SPRING_DATASOURCE_PASSWORD",
