@@ -36,8 +36,7 @@ class ExampleIntegrationTest {
           .withPassword("Smousse+51")
           .withNetwork(network)
           .withNetworkAliases("db-mysql")
-          .withCreateContainerCmdModifier(cmd)
-          .waitingFor(Wait.forListeningPort());
+          .withCreateContainerCmdModifier(cmd);
 
   @Container
   static GenericContainer<?> exempleApp =
