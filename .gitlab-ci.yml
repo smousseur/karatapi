@@ -42,7 +42,7 @@ integration_tests:
     when: always
     reports:
       junit:
-        - target/surefire-reports/*.xml
+        - integration-tests/target/surefire-reports/*.xml
     paths:
-      - target/surefire-reports/*.xml
-      - target/karate-reports/
+      - integration-tests/target/surefire-reports/*.xml
+      - integration-tests/target/karate-reports/
