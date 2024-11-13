@@ -25,7 +25,7 @@ class ExampleIntegrationTest {
   static final Network network = Network.newNetwork();
 
   static Consumer<CreateContainerCmd> cmd =
-      e -> e.withPortBindings(new PortBinding(Ports.Binding.bindPort(3306), new ExposedPort(3306)));
+      e -> e.withPortBindings(new PortBinding(Ports.Binding.bindPort(3307), new ExposedPort(3307)));
 
   @Container
   static final MySQLContainer<?> mySQLContainer =
@@ -50,7 +50,7 @@ class ExampleIntegrationTest {
           .withEnv(
               Map.of(
                   "SPRING_DATASOURCE_URL",
-                  "jdbc:mysql://db-mysql:3306/test",
+                  "jdbc:mysql://db-mysql:3307/test",
                   "SPRING_DATASOURCE_USERNAME",
                   mySQLContainer.getUsername(),
                   "SPRING_DATASOURCE_PASSWORD",
