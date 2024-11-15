@@ -63,5 +63,6 @@ push_github:
     - git remote add gitlab "${CI_REPOSITORY_URL}"
     - git fetch gitlab --tags
     - echo "Pushing to github"
-    - git push --mirror "https://${GITHUB_TOKEN}@${GITHUB_URL}/${GITHUB_REPO}.git"
+    - GITHUB_FULL_URL="https://${GITHUB_TOKEN}@${GITHUB_URL}/${GITHUB_REPO}.git"
+    - git push --mirror "$GITHUB_FULL_URL"
   when: manual
