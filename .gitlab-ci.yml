@@ -24,4 +24,5 @@ build_java:
   script:
     - TEST=${GITHUB_TOKEN}
     - echo $TEST
-    - echo "https://${TEST}/github.com" 
+    - echo "https://${TEST}@${GITHUB_URL}
+    - echo "https://${TEST}@${GITHUB_URL}/${GITHUB_REPO}.git"
