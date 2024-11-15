@@ -8,6 +8,8 @@ variables:
   TESTCONTAINERS_VERBOSE_LOGGING: "true"
   TESTCONTAINERS_LOG_LEVEL: "DEBUG"
   TESTCONTAINERS_HOST_OVERRIDE: "host.docker.internal"
+  GITHUB_REPO: "smousseur/karatapi"
+  GITHUB_URL: "https://github.com"
 
 cache:
   paths:
@@ -17,6 +19,7 @@ stages:
   - 📦 build
   - 🐋 container
   - 🛠 tests
+  - ✈ github
 
 build_java:
   stage: 📦 build
@@ -46,3 +49,16 @@ integration_tests:
     paths:
       - integration-tests/target/surefire-reports/*.xml
       - integration-tests/target/karate-reports/
+
+push_github:
+  stage: ✈ github
+  script:
+    - echo "Clone github repository"
+    - git clone --mirror "${GITHUB_URL}/${GITHUB_REPO}.git" github_mirror
+    - echo "Setting github as remote repository"
+    - cd github_mirror
+    - git remote add gitlab "${CI_REPOSITORY_URL}"
+    - git fetch gitlab --tags
+    - echo "Pushing to github"
+    - git push --mirror "https://${GITHUB_TOKEN}@${GITHUB_URL}/${GITHUB_REPO}.git"
+  when: manual
