@@ -16,7 +16,39 @@ cache:
     - .m2/repository
 
 stages:
+  - 📦 build
+  - 🐋 container
+  - 🛠 tests
   - ✈ github
+
+build_java:
+  stage: 📦 build
+  script:
+    - mvn clean install
+  artifacts:
+    paths:
+      - "**/target/"
+    expire_in: 1 hour
+
+build_image:
+  stage: 🐋 container
+  script:
+    - cd example-api
+    - mvn clean org.springframework.boot:spring-boot-maven-plugin:build-image
+
+integration_tests:
+  stage: 🛠 tests
+  script:
+    - cd integration-tests
+    - mvn clean install -P !unitTests -P integrationTests
+  artifacts:
+    when: always
+    reports:
+      junit:
+        - integration-tests/target/surefire-reports/*.xml
+    paths:
+      - integration-tests/target/surefire-reports/*.xml
+      - integration-tests/target/karate-reports/
 
 push_github:
   stage: ✈ github
