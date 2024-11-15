@@ -52,7 +52,9 @@ integration_tests:
 
 push_github:
   stage: ✈ github
-  image: alpine/git
+  image: debian/bullseye-slim
+  before_script:
+    - apt-get update && apt-get install -y git  
   script:
     - echo "Clone github repository"
     - git clone --mirror "${GITHUB_URL}/${GITHUB_REPO}.git" github_mirror
