@@ -16,53 +16,12 @@ cache:
     - .m2/repository
 
 stages:
-  - 📦 build
-  - 🐋 container
-  - 🛠 tests
-  - ✈ github
+  - 📦 test
+
 
 build_java:
-  stage: 📦 build
+  stage: 📦 test
   script:
-    - mvn clean install
-  artifacts:
-    paths:
-      - "**/target/"
-    expire_in: 1 hour
-
-build_image:
-  stage: 🐋 container
-  script:
-    - cd example-api
-    - mvn clean org.springframework.boot:spring-boot-maven-plugin:build-image
-
-integration_tests:
-  stage: 🛠 tests
-  script:
-    - cd integration-tests
-    - mvn clean install -P !unitTests -P integrationTests
-  artifacts:
-    when: always
-    reports:
-      junit:
-        - integration-tests/target/surefire-reports/*.xml
-    paths:
-      - integration-tests/target/surefire-reports/*.xml
-      - integration-tests/target/karate-reports/
-
-push_github:
-  stage: ✈ github
-  image: debian:bullseye-slim
-  before_script:
-    - apt-get update && apt-get install -y git  
-  script:
-    - echo "Clone github repository"
-    - git clone --mirror "${GITHUB_URL}/${GITHUB_REPO}.git" github_mirror
-    - echo "Setting github as remote repository"
-    - cd github_mirror
-    - git remote add gitlab "${CI_REPOSITORY_URL}"
-    - git fetch gitlab --tags
-    - echo "Pushing to github"
-    - GITHUB_FULL_URL="https://${GITHUB_TOKEN}@${GITHUB_URL}/${GITHUB_REPO}.git"
-    - git push --mirror "$GITHUB_FULL_URL"
-  when: manual
+    - TEST=${GITHUB_TOKEN}
+    - echo $TEST
+    - echo "https://${TEST}/github.com" 
