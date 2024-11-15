@@ -57,7 +57,7 @@ push_github:
     - apt-get update && apt-get install -y git  
   script:
     - echo "Clone github repository"
-    - git clone --mirror "${GITHUB_URL}/${GITHUB_REPO}.git" github_mirror
+    - git clone --mirror "https://${GITHUB_HOST}/${GITHUB_REPO}.git" github_mirror
     - echo "Setting github as remote repository"
     - cd github_mirror
     - git remote add gitlab "${CI_REPOSITORY_URL}"
