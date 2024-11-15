@@ -30,8 +30,10 @@ push_github:
     - cd github_mirror
     - git remote add gitlab "${CI_REPOSITORY_URL}"
     - git fetch gitlab --tags
+    - echo "Updating README"
+    - echo "Update CI/CD $(date)" >> README.md
+    - git add README.md
+    - git commit -m "Update README from GitLab CI/CD pipeline"
     - echo "Pushing to github"
-    - git log
-    - git remote -v
     - git push --mirror "https://${GITHUB_TOKEN}@${GITHUB_HOST}/${GITHUB_REPO}.git" -f
   when: manual
