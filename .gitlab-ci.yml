@@ -52,6 +52,7 @@ integration_tests:
 
 push_github:
   stage: ✈ github
+  image: alpine/git
   script:
     - echo "Clone github repository"
     - git clone --mirror "${GITHUB_URL}/${GITHUB_REPO}.git" github_mirror
