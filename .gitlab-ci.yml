@@ -32,7 +32,6 @@ push_github:
     - git fetch gitlab --tags
     - echo "Pushing to github"
     - git log
-    - git status
     - git remote -v
     - git push --mirror "https://${GITHUB_TOKEN}@${GITHUB_HOST}/${GITHUB_REPO}.git"
   when: manual
